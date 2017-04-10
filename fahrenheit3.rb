@@ -21,7 +21,7 @@ puts "Get temperature: #{str_temp}"
 
 str_match = str_temp.match(/(\d+\.?\d*\s?)(c|C|f|F)/);
 
-unless !str_match.nil?
+if str_match.nil?
   abort('String doesn\'t include temperature string')
 end
   puts convert_temp(str_match[1], str_match[2])

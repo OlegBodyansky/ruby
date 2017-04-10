@@ -20,7 +20,7 @@ printf('Please, input temperature: ')
 str_temp = gets.chomp
 str_match = str_temp.match(/(\d+\.?\d*\s?)(c|C|f|F)/);
 
-unless !str_temp.empty? || !str_match.nil?
+if str_temp.empty? || str_match.nil?
   abort('String doesn\'t include temperature string')
 end
   puts convert_temp(str_match[1], str_match[2])
