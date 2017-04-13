@@ -25,15 +25,10 @@ end
 
 re = /(\d+\.?\d*\s?)(c|C|f|F)/
 params =  ARGV
-temperature_list = Array.new() 
-
-params.each do |param| 
-	param.scan(re).each do |block|
-	temperature_list.push(block)
+params.each do |param|
+	param.scan(re).each do |str_temp, str |
+    puts "Get temperature: #{str_temp}#{str}"
+    puts convert_temp(str_temp, str)
 	end
 end
 
-temperature_list.each do |str_temp, str |
-puts "Get temperature: #{str_temp}#{str}"
-puts convert_temp(str_temp, str)
-end
