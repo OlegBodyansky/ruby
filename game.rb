@@ -1,3 +1,10 @@
+=begin
+= Program get parameter in start, which set amount of attempts.
+= First of all program asks input integer number in range 1..100
+= After, it check input to integer. If it's not integer, game asks again for input
+= When game get number, it say what  number is, less or greater
+= If you missed all your attempts you get thought number
+=end
 def getUserNumber
   printf("Try to guess a integer number: ")
   user_input = gets.chomp
@@ -39,5 +46,5 @@ attempt.to_i.times do
 end
 
 if (guessed == 0)
-  puts "I guessed #{guessed_number}"
+  puts "I thought of #{guessed_number} number"
 end
