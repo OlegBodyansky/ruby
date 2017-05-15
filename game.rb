@@ -16,18 +16,18 @@ def getUserNumber
 end
 
 def checkInput(guessed_number, input)
-    guessed =0
-      if guessed_number > input
-        puts "Your number is less, than I guessed"
-        end
-      if guessed_number < input
-        puts "Your number is greater, than I guessed"
-      end
+  guessed =false
+  if guessed_number > input
+    puts "Your number is less, than I guessed"
+  end
+  if guessed_number < input
+    puts "Your number is greater, than I guessed"
+  end
 
-      if guessed_number == input
-        puts "Your guessed!"
-        guessed = 1
-      end
+  if guessed_number == input
+    puts "Your guessed!"
+    guessed = true
+  end
   return guessed
 end
 
@@ -38,13 +38,13 @@ guessed_number = rand(100)
 guessed=0
 attempt.to_i.times do
   user_number = getUserNumber
- guessed = checkInput(guessed_number, user_number)
-  if ( guessed==1)
+
+  if guessed = checkInput(guessed_number, user_number)
     break
   end
 
 end
 
-if (guessed == 0)
+unless guessed
   puts "I thought of #{guessed_number} number"
 end
