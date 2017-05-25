@@ -26,45 +26,43 @@ class File_data
 end
 
 class Figure
-	@amount_params = 2
-
+  @amount_params = 2
   attr_accessor :area, :params
 
-
- def self.amount_params
+  def self.amount_params
     @amount_params
   end
-  
-  def printParams(param)
-    print "Used params: #{param.join(',')} "
+
+  def printParams()
+    print "Used params: #{@params.join(',')} "
   end
-  
+
   def printResult()
     puts "Count square: #{@area}"
   end
-
 end
 
 class Circle < Figure
-@amount_params = 1
+  @amount_params = 1
 
-  def getSquare(param)
-    @area = Math::PI * param[0].to_f ** 2
+  def getSquare()
+    @area = Math::PI * @params[0].to_f ** 2
   end
 end
 
 class Square < Figure
-@amount_params = 2
-  def getSquare(param)
-	
-    @area =  param[0].to_f * (!param[1].nil? ? param[1].to_f : param[0].to_f)
+  @amount_params = 2
+
+  def getSquare()
+    @area = @params[0].to_f * (!@params[1].nil? ? @params[1].to_f : @params[0].to_f)
   end
 end
 
 class Triangle < Figure
-@amount_params = 2
-  def getSquare(param)
-    @area =  0.5* param[0].to_f * (!param[1].nil? ? param[1].to_f : param[0].to_f)
+  @amount_params = 2
+
+  def getSquare()
+    @area = 0.5* @params[0].to_f * (!@params[1].nil? ? @params[1].to_f : @params[0].to_f)
   end
 end
 
@@ -73,19 +71,19 @@ file_input = ARGV[0]
 file = File_data.new(file_input)
 file.collectFigures()
 file.figures.each do |key, value|
-	i=0
+  i=0
   if Object.const_defined?(key.capitalize)
     figure =Object.const_get(key.capitalize)
     figure = figure.new
-	puts key.capitalize
-	while i < value.length do
-	
-		figure.getSquare(value.slice(i,figure.class.amount_params))
-		figure.printParams(value.slice(i,figure.class.amount_params))
-		figure.printResult
-		i+= figure.class.amount_params
-	end
-   
+    puts key.capitalize
+    while i < value.length do
+      figure.params= value.slice(i, figure.class.amount_params);
+      figure.getSquare()
+      figure.printParams()
+      figure.printResult
+      i+= figure.class.amount_params
+    end
+
   end
 end
 
