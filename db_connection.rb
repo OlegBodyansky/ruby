@@ -16,7 +16,7 @@ end
 
 client = Mysql2::Client.new(:host => "localhost", :username => "root", :password => "root", :database => "test");
 
-
+p client.class
 #4.1 selects all records from people table
 $query_all = 'Select * from people'
 # 4.2 selects only director
