@@ -1,21 +1,42 @@
-require 'mysql2'
-class Connection
-  attr_accessor :connection
+class Database
+  attr_accessor :db, :builder
+    def initialize
+      @db = Mysql2::Client.new(YAML.load_file('config.yml')['db'])
+      @builder= QueryBuilder.new()
+    end
 
-  def initialize(db_params)
-    @connection = Mysql2::Client.new(db_params);
+    def query()
+      @db.query(@builder.query_string)
+    end
+end
+
+class QueryBuilder
+  @@select = '*'
+  attr_accessor :query_string
+  def select(fields)
+    @@select = fields
+    self
   end
+
+  def from(table)
+    @from = table
+    self
+  end
+
+  def all
+    @query_string = "select #{@@select} from #{@from};"
+  end
+
 end
 
 class People
   attr_accessor :name, :type, :age, :connection, :list
-  # def initialize(data)
-  #   @name = data[:name]
-  #   @type = data[:type]
-  #   @age = data[:age]
-  # end
+  def initialize
+    @db = Database.new()
+  end
   def getPeople()
-    connection.query('Select * from people')
+    @db.builder.select('name, age').from('people').all
+    @list = @db.query()
   end
   def printList()
     list.each{|row| p row}
@@ -23,9 +44,12 @@ class People
 end
 
 class Student < People
+
   def getGroupList(group)
-    @query = connection.prepare("select people.*, gr.* from people inner join (select groups.name as group_name, people_groups.people_id from groups left join people_groups on groups.id = people_groups.group_id where groups.name LIKE (?) )as gr  on people.id=gr.people_id ")
-    @list = @query.execute(group)
+    p @db.select('her')
+    @list = @db.db.prepare("select people.*, gr.* from people inner join (select groups.name as group_name, people_groups.people_id from groups left join people_groups on groups.id = people_groups.group_id where groups.name LIKE (?) )as gr  on people.id=gr.people_id ").execute(group)
+    #@list = @query.execute(group)
+    #@list= @db.select().where().query()
   end
 
   def printList()

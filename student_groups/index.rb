@@ -1,10 +1,8 @@
-require_relative 'main_config'
+require 'yaml'
+require 'mysql2'
 require_relative 'classes'
-
+config= YAML.load_file 'config.yml'
 param = ARGV[0]
-
-connect  = Connection.new(MainConfig.config[:db_params])
-people = Student.new()
-people.connection = connect.connection
-people.getGroupList(param)
+people = People.new()
+people.getPeople
 people.printList
