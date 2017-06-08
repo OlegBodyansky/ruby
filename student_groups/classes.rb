@@ -52,20 +52,48 @@ class People
     @builder.from('people')
   end
 
-  def getPeople()
+  def getPeople
     @builder.select('name, age')
     @list = @db.query(@builder.get)
   end
 
-  def printList()
+  def printList
     list.each do |row|
       puts "#{self.class}: #{row['name']}, age: #{row['age']}"
     end
   end
 
-  def all()
+  def all
     @list = @db.query(@builder.andWhere(:type=>self.class.to_s.downcase).get)
   end
+
+  def find(id)
+    return @row if !@row.nil? && @row[:id] == id
+    @row = @db.query(
+        @builder.
+            andWhere(
+                :id => id,
+                :type => self.class.to_s.downcase
+            ).get
+    ).first
+  end
+
+  def groups
+=begin
+    SELECT * FROM test.people_groups
+    inner join  test.groups
+    on test.groups.id = test.people_groups.group_id
+    WHERE test.people_groups.people_id = 2
+=end
+  p @builder.select( "groups.*").from("people_groups").
+      andWhere("people_groups.people_id" => 2).get
+  abort
+  @db.query("SELECT test.groups.* FROM test.people_groups
+    inner join  test.groups
+    on test.groups.id = test.people_groups.group_id
+    WHERE test.people_groups.people_id = 2").each
+  end
+
 end
 
 class Student < People

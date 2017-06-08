@@ -7,4 +7,5 @@ people = Student.new
 #people.all
 
 teacher = Teacher.new
-teacher.all
+p teacher.find(2)
+p teacher.groups
