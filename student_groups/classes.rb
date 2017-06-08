@@ -1,20 +1,26 @@
 class Database
-  attr_accessor :db, :builder
+  attr_accessor :db
     def initialize
       @db = Mysql2::Client.new(YAML.load_file('config.yml')['db'])
-      @builder= QueryBuilder.new()
+
     end
 
-    def query()
-      @db.query(@builder.query_string)
+    def query(query_string)
+      @db.query(query_string)
     end
 end
 
 class QueryBuilder
-  @@select = '*'
+
   attr_accessor :query_string
+  def initialize
+    @select = '*'
+    @from =''
+    @where = '1=1'
+  end
+
   def select(fields)
-    @@select = fields
+    @select = fields
     self
   end
 
@@ -22,40 +28,50 @@ class QueryBuilder
     @from = table
     self
   end
+  def andWhere(data ={})
+    where_param =[]
 
-  def all
-    @query_string = "select #{@@select} from #{@from};"
+     data.each{|key,val|
+       val = "'#{val}'" if val.class == String
+       where_param.push("#{key} = #{val}")
+     }
+    str  = where_param.join(' AND ')
+    @where = str unless str.empty?
+    self
+  end
+  def get
+    @query_string = "select #{@select} from #{@from} where #{@where} ;"
   end
 
 end
 
 class People
-  attr_accessor :name, :type, :age, :connection, :list
   def initialize
-    @db = Database.new()
+    @db = Database.new
+    @builder= QueryBuilder.new
+    @builder.from('people')
   end
+
   def getPeople()
-    @db.builder.select('name, age').from('people').all
-    @list = @db.query()
+    @builder.select('name, age')
+    @list = @db.query(@builder.get)
   end
+
   def printList()
-    list.each{|row| p row}
+    list.each do |row|
+      puts "#{self.class}: #{row['name']}, age: #{row['age']}"
+    end
+  end
+
+  def all()
+    @list = @db.query(@builder.andWhere(:type=>self.class.to_s.downcase).get)
   end
 end
 
 class Student < People
 
-  def getGroupList(group)
-    p @db.select('her')
-    @list = @db.db.prepare("select people.*, gr.* from people inner join (select groups.name as group_name, people_groups.people_id from groups left join people_groups on groups.id = people_groups.group_id where groups.name LIKE (?) )as gr  on people.id=gr.people_id ").execute(group)
-    #@list = @query.execute(group)
-    #@list= @db.select().where().query()
-  end
+end
 
-  def printList()
-    list.each do |row|
-      puts "Student: #{row['name']}, age: #{row['age']}"
-    end
-  end
+class Teacher < People
 
 end
