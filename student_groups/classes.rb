@@ -15,8 +15,10 @@ class QueryBuilder
   attr_accessor :query_string
   def initialize
     @select = '*'
+    @join = ''
     @from =''
     @where = '1=1'
+    @type = 'inner'
   end
 
   def select(fields)
@@ -24,10 +26,19 @@ class QueryBuilder
     self
   end
 
+  def join(data={})
+    @type = data[:type] if !data.nil?
+    @join_table = data[:join_table]
+    @on  = data[:on]
+    @join = "#{@type} join #{@join_table} on #{@on}" if !@on.nil?  && !@join_table.nil?
+    self
+  end
+
   def from(table)
     @from = table
     self
   end
+
   def andWhere(data ={})
     where_param =[]
 
@@ -40,7 +51,8 @@ class QueryBuilder
     self
   end
   def get
-    @query_string = "select #{@select} from #{@from} where #{@where} ;"
+    @query_string = "select #{@select} from #{@from} #{@join} where #{@where} ;"
+    p @query_string
   end
 
 end
@@ -78,6 +90,8 @@ class People
     ).first
   end
 
+
+
   def groups
 =begin
     SELECT * FROM test.people_groups
@@ -85,13 +99,13 @@ class People
     on test.groups.id = test.people_groups.group_id
     WHERE test.people_groups.people_id = 2
 =end
-  p @builder.select( "groups.*").from("people_groups").
+
+  @db.query(@builder.
+      select("groups.*").
+      from("people_groups").
+      join(:type=>'right',:join_table => 'groups', :on =>"groups.id = people_groups.group_id").
       andWhere("people_groups.people_id" => 2).get
-  abort
-  @db.query("SELECT test.groups.* FROM test.people_groups
-    inner join  test.groups
-    on test.groups.id = test.people_groups.group_id
-    WHERE test.people_groups.people_id = 2").each
+  ).each
   end
 
 end
